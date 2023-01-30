@@ -1,0 +1,58 @@
+@import (reference) '~antd/dist/antd.variable.less';
+
+.row {
+  display: flex;
+  align-items: center;
+  .checkbox {
+    padding: 0 10px;
+  }
+}
+
+.bgRow:nth-child(2n) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+.selectRow {
+  background-color: rgba(24, 144, 255, 0.5) !important;
+}
+.shadowRow {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+// 去除列拖拽默认图标
+:global {
+  .react-resizable-handle {
+    width: 20px !important;
+    height: 100% !important;
+    cursor: e-resize !important;
+    background-image: none !important;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td,
+  .ant-table tfoot > tr > th,
+  .ant-table tfoot > tr > td {
+    padding: 0 10px !important;
+    height: 28px !important;
+  }
+}
+
+// 表格的滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e3e7ed;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:vertical:hover {
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-track {
+  // box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  // background: rgba(0, 0, 0, 0.1);
+}

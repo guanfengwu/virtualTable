@@ -2,22 +2,34 @@
  * @Author: WGF
  * @Date: 2023-01-29 13:42:55
  * @LastEditors: WGF
- * @LastEditTime: 2023-01-30 17:37:59
+ * @LastEditTime: 2023-02-02 20:13:31
  * @FilePath: \umi\src\components\VirtualTable\index.tsx
  * @Description: 文件描述
  */
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Table } from 'antd';
 import VirtualTableBody from '../VirtualTableBody';
-import { TableComponents } from 'rc-table/lib/interface';
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 
 const IndexPage: React.FC<{
   dataSource: any;
   columns: any;
+  selectionType: 'checkbox' | 'radio'; // 选择模式(单选或多选)
+  showHeader?: boolean; // 是否展示表头
+  onSelect: Function;
+  selectValue: string[];
+  onChange: Function;
 }> = (props) => {
-  const { dataSource, columns } = props;
+  const {
+    dataSource,
+    columns,
+    selectionType,
+    onSelect,
+    selectValue,
+    onChange,
+    showHeader = true,
+  } = props;
   const [columnsOpts, setColumnsOpts] = useState<any>(
     columns?.map((col: any) => {
       col.onHeaderCell = () => ({
@@ -27,6 +39,14 @@ const IndexPage: React.FC<{
       return col;
     }),
   );
+
+  const [selectedValue, setSelectedValue] = useState<string[]>(selectValue);
+
+  useEffect(() => {
+    if (selectionType === 'checkbox') {
+      setSelectedValue(selectValue);
+    }
+  }, [selectValue]);
 
   const handleResize =
     (column: any) =>
@@ -51,13 +71,20 @@ const IndexPage: React.FC<{
       </Resizable>
     );
   };
-  const renderVirtualList = (props: any) => {
+  const renderVirtualList = () => {
     return (
-      <VirtualTableBody
-        dataSource={dataSource}
-        columns={columns}
-        selectionType="checkbox"
-      />
+      <div style={{ height: '280px' }}>
+        <VirtualTableBody
+          dataSource={dataSource}
+          columns={columnsOpts}
+          selectionType={selectionType}
+          visibleHeight={280}
+          onSelect={onSelect}
+          selectValue={selectedValue}
+          setSelectedValue={setSelectedValue}
+          onChange={onChange}
+        />
+      </div>
     );
   };
 
@@ -69,18 +96,42 @@ const IndexPage: React.FC<{
       body: {
         wrapper: renderVirtualList,
       },
-      // table: renderVirtualList,
     }),
-    [],
+    [dataSource, selectedValue],
   );
+
+  /**
+   * 不同选择模式下需要传的参数
+   */
+  const checkboxParam: any = useMemo(() => {
+    if (selectionType === 'checkbox') {
+      return {
+        rowSelection: {
+          type: 'checkbox',
+          onChange: (selectedRowKeys: string[], selectedRows: any[]) => {
+            setSelectedValue(selectedRowKeys);
+            if (selectedRowKeys.length === 0) {
+              dataSource.forEach((item: any) => onChange(item));
+            }
+          },
+          selectedRowKeys: selectedValue,
+        },
+      };
+    } else {
+      return {
+        rowSelection: {
+          type: 'radio',
+        },
+      };
+    }
+  }, [selectionType, selectedValue, dataSource]);
 
   return (
     <Table
       dataSource={dataSource}
-      rowSelection={{
-        type: 'checkbox',
-      }}
+      {...checkboxParam}
       columns={columnsOpts}
+      showHeader={showHeader}
       pagination={false}
       components={components}
     />

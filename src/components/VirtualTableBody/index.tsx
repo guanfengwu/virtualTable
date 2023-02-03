@@ -2,7 +2,7 @@
  * @Author: WGF
  * @Date: 2023-01-28 17:30:44
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-02 19:33:14
+ * @LastEditTime: 2023-02-03 10:24:59
  * @FilePath: \umi\src\components\VirtualTableBody\index.tsx
  * @Description: 文件描述
  */
@@ -57,17 +57,12 @@ const IndexPage: React.FC<{
   const panelRef = useRef<any>();
   const listRef = useRef<any>();
   const renderListRef = useRef<any>(dataSource.slice(0, 10));
-  const indexRef = useRef<number>(
-    (list
-      .map((item: any) => item.key)
-      .indexOf(selectValue[selectValue.length - 1]) !== -1 &&
-      list
-        .map((item: any) => item.key)
-        .indexOf(selectValue[selectValue.length - 1])) ||
-      0,
-  );
+  const indexRef = useRef<number>(0);
   const inKeyBoard = useRef<boolean>(false);
 
+  /**
+   * 键盘事件监听(目前支持ArrowUp,ArrowDown,Enter按键)
+   */
   useKey(
     'ArrowUp',
     (e) => {
@@ -145,7 +140,7 @@ const IndexPage: React.FC<{
       selectKeyValue,
       dataSource.filter((item: any) => selectKeyValue.includes(item.key)),
     );
-  }, [selectKeyValue, dataSource, selectValue]);
+  }, [selectKeyValue, dataSource]);
 
   /**
    * 行点击事件

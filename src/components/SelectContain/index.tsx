@@ -2,7 +2,7 @@
  * @Author: WGF
  * @Date: 2023-01-31 09:52:36
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-02 16:23:57
+ * @LastEditTime: 2023-02-03 10:34:52
  * @FilePath: \umi\src\components\SelectContain\index.tsx
  * @Description: 文件描述
  */
@@ -82,7 +82,7 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
   }, [fetchOptions, selectionType]);
 
   /**
-   * 数组对象去重
+   * 数组对象去重方法
    * @param arr
    * @returns
    */

@@ -2,7 +2,7 @@
  * @Author: WGF
  * @Date: 2023-01-18 11:08:39
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-02 19:45:32
+ * @LastEditTime: 2023-02-03 09:53:10
  * @FilePath: \umi\src\pages\Section2\index.tsx
  * @Description: 文件描述
  */
@@ -14,7 +14,7 @@ const IndexPage: React.FC<{}> = (props) => {
   async function searchRequest(keyWord: string) {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const dataSource = Array.from(Array(100), (item, index) => ({
+        const dataSource = Array.from(Array(100000), (item, index) => ({
           key: `${keyWord}${index + 1}`,
           code: `${keyWord}${index + 1}`,
           name: `测试${keyWord}${index + 1}`,

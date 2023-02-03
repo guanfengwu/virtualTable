@@ -2,7 +2,7 @@
  * @Author: WGF
  * @Date: 2023-01-29 13:42:55
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-02 20:13:31
+ * @LastEditTime: 2023-02-03 10:30:49
  * @FilePath: \umi\src\components\VirtualTable\index.tsx
  * @Description: 文件描述
  */
@@ -11,6 +11,7 @@ import { Table } from 'antd';
 import VirtualTableBody from '../VirtualTableBody';
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css';
+import { render } from 'react-dom';
 
 const IndexPage: React.FC<{
   dataSource: any;
@@ -39,14 +40,7 @@ const IndexPage: React.FC<{
       return col;
     }),
   );
-
   const [selectedValue, setSelectedValue] = useState<string[]>(selectValue);
-
-  useEffect(() => {
-    if (selectionType === 'checkbox') {
-      setSelectedValue(selectValue);
-    }
-  }, [selectValue]);
 
   const handleResize =
     (column: any) =>
@@ -71,6 +65,7 @@ const IndexPage: React.FC<{
       </Resizable>
     );
   };
+
   const renderVirtualList = () => {
     return (
       <div style={{ height: '280px' }}>
@@ -80,7 +75,7 @@ const IndexPage: React.FC<{
           selectionType={selectionType}
           visibleHeight={280}
           onSelect={onSelect}
-          selectValue={selectedValue}
+          selectValue={selectValue}
           setSelectedValue={setSelectedValue}
           onChange={onChange}
         />
@@ -88,17 +83,17 @@ const IndexPage: React.FC<{
     );
   };
 
-  const components = useMemo(
-    () => ({
-      header: {
-        cell: ResizableTitle,
-      },
-      body: {
-        wrapper: renderVirtualList,
-      },
-    }),
-    [dataSource, selectedValue],
-  );
+  const renderTableHeader = useMemo(() => {
+    return {
+      cell: ResizableTitle,
+    };
+  }, [selectedValue]);
+
+  const renderTableBody = useMemo(() => {
+    return {
+      wrapper: renderVirtualList,
+    };
+  }, []);
 
   /**
    * 不同选择模式下需要传的参数
@@ -108,12 +103,7 @@ const IndexPage: React.FC<{
       return {
         rowSelection: {
           type: 'checkbox',
-          onChange: (selectedRowKeys: string[], selectedRows: any[]) => {
-            setSelectedValue(selectedRowKeys);
-            if (selectedRowKeys.length === 0) {
-              dataSource.forEach((item: any) => onChange(item));
-            }
-          },
+          // onChange: (selectedRowKeys: string[], selectedRows: any[]) => {},
           selectedRowKeys: selectedValue,
         },
       };
@@ -124,16 +114,19 @@ const IndexPage: React.FC<{
         },
       };
     }
-  }, [selectionType, selectedValue, dataSource]);
+  }, [selectionType, selectValue, selectedValue]);
 
   return (
     <Table
-      dataSource={dataSource}
+      dataSource={dataSource.slice(0, 100)}
       {...checkboxParam}
       columns={columnsOpts}
       showHeader={showHeader}
       pagination={false}
-      components={components}
+      components={{
+        header: renderTableHeader,
+        body: renderTableBody,
+      }}
     />
   );
 };

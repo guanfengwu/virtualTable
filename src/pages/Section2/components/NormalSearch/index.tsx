@@ -2,9 +2,9 @@
  * @Author: WGF
  * @Date: 2023-01-31 10:46:09
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-02 19:39:43
+ * @LastEditTime: 2023-02-03 15:19:51
  * @FilePath: \umi\src\pages\Section2\components\NormalSearch\index.tsx
- * @Description: 文件描述
+ * @Description: 满足大数据量情况下的普通搜索
  */
 import SelectContain from '@/components/SelectContain';
 import VirtualTable from '@/components/VirtualTable';
@@ -25,13 +25,13 @@ const IndexPage: React.FC<{
   const [dataSource, setDataSource] = useState<any>([]);
   const [selectValue, setSelectValue] = useState<string[]>([]); // 选中后的值
   const searchRef = useRef<any>(null);
+  /**
+   * 在配置列宽时，最后一列的width不要配置
+   */
   const columns = [
     { title: '编号', dataIndex: 'code', key: 'code', width: 200 },
     { title: '名称', dataIndex: 'name', key: 'name' },
   ];
-  const setData = useCallback((item) => {
-    setDataSource(item);
-  }, []);
   const onSelected = (selected: any[], selectedItem: any[]) => {
     searchRef.current.handleSelect(selected, selectedItem);
   };
@@ -43,7 +43,7 @@ const IndexPage: React.FC<{
       <SelectContain
         selectionType={selectionType}
         fetchOptions={fetchOptions}
-        setSourceData={setData}
+        setSourceData={setDataSource}
         onRef={searchRef}
         onSelect={onSelect}
         selectValue={selectValue}

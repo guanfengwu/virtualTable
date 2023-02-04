@@ -2,7 +2,7 @@
  * @Author: WGF
  * @Date: 2023-01-28 17:30:44
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-03 10:24:59
+ * @LastEditTime: 2023-02-04 15:26:38
  * @FilePath: \umi\src\components\VirtualTableBody\index.tsx
  * @Description: 文件描述
  */
@@ -95,6 +95,8 @@ const IndexPage: React.FC<{
     'ArrowDown',
     (e) => {
       if (panelRef.current.getBoundingClientRect().top === 0) return;
+      console.log('12345', indexRef.current, list);
+
       e.preventDefault();
       inKeyBoard.current = true;
       if (indexRef.current >= 9) {
@@ -242,7 +244,7 @@ const IndexPage: React.FC<{
             >
               <div className={styles.checkbox}>
                 {(() => {
-                  const CheckComponent = checkComponents[selectionType];
+                  const CheckComponent = checkComponents['checkbox'];
                   return (
                     <CheckComponent
                       key={item.key}

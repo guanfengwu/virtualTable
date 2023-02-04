@@ -2,7 +2,7 @@
  * @Author: WGF
  * @Date: 2023-01-31 09:52:36
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-03 10:34:52
+ * @LastEditTime: 2023-02-03 12:00:22
  * @FilePath: \umi\src\components\SelectContain\index.tsx
  * @Description: 文件描述
  */
@@ -126,6 +126,10 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
    * 多选模式下点击确认按钮
    */
   const confirmOk = () => {
+    if (checkboxModeSelectData.current.length > 2000) {
+      console.log('选择项不建议超过2000，请重新选择!!!');
+      return;
+    }
     const keys = checkboxModeSelectData.current.map((item: any) => item.key);
     onSelect && onSelect(keys, checkboxModeSelectData.current);
     setSelectValue(keys);

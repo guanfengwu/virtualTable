@@ -2,16 +2,21 @@
  * @Author: WGF
  * @Date: 2023-01-29 13:42:55
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-03 10:30:49
+ * @LastEditTime: 2023-02-03 16:09:02
  * @FilePath: \umi\src\components\VirtualTable\index.tsx
  * @Description: 文件描述
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Table } from 'antd';
 import VirtualTableBody from '../VirtualTableBody';
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import { render } from 'react-dom';
 
 const IndexPage: React.FC<{
   dataSource: any;
@@ -40,8 +45,16 @@ const IndexPage: React.FC<{
       return col;
     }),
   );
-  const [selectedValue, setSelectedValue] = useState<string[]>(selectValue);
-
+  const [selectedValue, setSelectedValue] = useState<string[]>([]);
+  const selectedValueRef = useRef<string[]>(selectValue);
+  useEffect(() => {
+    setSelectedValue(selectValue);
+  }, [selectValue]);
+  useEffect(() => {
+    if (selectionType === 'checkbox') {
+      selectedValueRef.current = selectValue;
+    }
+  }, [selectValue]);
   const handleResize =
     (column: any) =>
     (e: any, { size }: any) => {
@@ -75,7 +88,7 @@ const IndexPage: React.FC<{
           selectionType={selectionType}
           visibleHeight={280}
           onSelect={onSelect}
-          selectValue={selectValue}
+          selectValue={selectedValueRef.current}
           setSelectedValue={setSelectedValue}
           onChange={onChange}
         />
@@ -93,7 +106,7 @@ const IndexPage: React.FC<{
     return {
       wrapper: renderVirtualList,
     };
-  }, []);
+  }, [selectedValueRef.current, columnsOpts]);
 
   /**
    * 不同选择模式下需要传的参数
@@ -103,7 +116,17 @@ const IndexPage: React.FC<{
       return {
         rowSelection: {
           type: 'checkbox',
-          // onChange: (selectedRowKeys: string[], selectedRows: any[]) => {},
+          onChange: (selectedRowKeys: string[], selectedRows: any[]) => {
+            if (selectedRowKeys.length === 0) {
+              selectedValueRef.current = [];
+              dataSource.forEach((item: any) => onChange(item));
+            } else {
+              selectedValueRef.current = dataSource.map(
+                (item: any) => item.key,
+              );
+            }
+            setSelectedValue(selectedRowKeys);
+          },
           selectedRowKeys: selectedValue,
         },
       };

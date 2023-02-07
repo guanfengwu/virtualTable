@@ -1,15 +1,24 @@
+/*
+ * @Author: WGF
+ * @Date: 2023-01-18 11:08:39
+ * @LastEditors: WGF
+ * @LastEditTime: 2023-02-07 11:02:01
+ * @FilePath: \umi\src\layouts\index.tsx
+ * @Description: 文件描述
+ */
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import { Link } from 'umi';
-import styles from './index.less';
+import './index.less';
 
 const { Header, Content, Footer } = Layout;
 const menuData = [
-  { route: 'section1', name: '虚拟表格方案1' },
-  { route: 'section2', name: '虚拟表格方案2' },
+  { route: 'section1', name: '原理' },
+  { route: 'section3', name: '表格' },
+  { route: 'section2', name: '搜索' },
 ];
 
-function BasicLayout(props: { location: { pathname: any; }; children: any; }) {
+function BasicLayout(props: { location: { pathname: any }; children: any }) {
   const {
     location: { pathname },
     children,
@@ -18,14 +27,14 @@ function BasicLayout(props: { location: { pathname: any; }; children: any; }) {
   return (
     <Layout>
       <Header>
-        <div className={styles.logo}>Umi </div>
+        <div className="logo">Umi </div>
         <Menu
           theme="dark"
           mode="horizontal"
           defaultSelectedKeys={[pathname]}
-          style={{ lineHeight: '64px' }}
+          style={{ lineHeight: '44px' }}
         >
-          {menuData.map(menu => (
+          {menuData.map((menu) => (
             <Menu.Item key={`/${menu.route}`}>
               <Link to={menu.route}>{menu.name}</Link>
             </Menu.Item>
@@ -33,7 +42,9 @@ function BasicLayout(props: { location: { pathname: any; }; children: any; }) {
         </Menu>
       </Header>
       <Content>
-        <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>{children}</div>
+        <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
+          {children}
+        </div>
       </Content>
     </Layout>
   );

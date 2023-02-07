@@ -1,42 +1,21 @@
 @import (reference) '~antd/dist/antd.variable.less';
 
-.row {
-  display: flex;
-  align-items: center;
-  text-align: left;
-  .checkbox {
+.panui-virtual-table-body {
+  .panui-virtual-table-body-row-colBox {
+    text-align: start;
     padding: 0 10px;
-  }
-  .colBox {
+    text-overflow: ellipsis;
+    white-space: nowrap;
     overflow: hidden;
   }
-}
-
-.bgRow:nth-child(2n) {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-.selectRow {
-  background-color: rgba(24, 144, 255, 0.5) !important;
-  // background-color: var(--ant-primary-color) !important;
-}
-.shadowRow {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-// 去除列拖拽默认图标
-:global {
-  .react-resizable-handle {
-    width: 20px !important;
-    height: 100% !important;
-    cursor: e-resize !important;
-    background-image: none !important;
+  .panui-virtual-table-body-row-bg:nth-child(2n) {
+    background-color: rgba(0, 0, 0, 0.02);
   }
-
-  .ant-table-thead > tr > th,
-  .ant-table-tbody > tr > td,
-  .ant-table tfoot > tr > th,
-  .ant-table tfoot > tr > td {
-    padding: 0 10px !important;
-    height: 28px !important;
+  .panui-virtual-table-body-row-select {
+    background-color: rgba(24, 144, 255, 0.5) !important;
+  }
+  .panui-virtual-table-body-row-shadow {
+    background-color: rgba(0, 0, 0, 0.1);
   }
 }
 

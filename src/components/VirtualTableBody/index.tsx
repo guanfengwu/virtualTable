@@ -2,12 +2,12 @@
  * @Author: WGF
  * @Date: 2023-01-28 17:30:44
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-04 15:26:38
+ * @LastEditTime: 2023-02-07 10:50:38
  * @FilePath: \umi\src\components\VirtualTableBody\index.tsx
  * @Description: 文件描述
  */
 
-import {
+import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -16,22 +16,22 @@ import {
   useState,
 } from 'react';
 import { Checkbox, Radio } from 'antd';
-import type { CheckboxChangeEvent } from 'antd/es/checkbox';
-import styles from './index.less';
+import './index.less';
 import useKey from 'react-use/lib/useKey';
 const checkComponents = {
   checkbox: Checkbox,
   radio: Radio,
 };
 const IndexPage: React.FC<{
-  dataSource: any; // 源数据
-  columns: any; // 行配置
+  dataSource: any[]; // 源数据
+  columns: object[]; // 行配置
   visibleHeight: number; // 表格可视高度
-  selectionType: 'checkbox' | 'radio'; // 选择模式(单选或多选)
-  onSelect: Function;
-  selectValue: string[];
-  onChange: Function;
-  setSelectedValue: Function;
+  selectionType?: 'checkbox' | 'radio'; // 选择模式(单选或多选)
+  onSelect?: Function; // 点击行时触发的方法(获取到当前所有已选中的行数据)
+  selectDefault?: string[]; // 默认当前选中的数据（key值)
+  onChange?: Function; // 点击行时触发的方法(获取到当前点击的行数据)
+  setHeadValue?: Function;
+  keyWord?: string; // 高亮的关键词
 }> = (props) => {
   const {
     dataSource,
@@ -39,24 +39,26 @@ const IndexPage: React.FC<{
     selectionType = 'radio',
     visibleHeight,
     onSelect,
-    selectValue,
+    selectDefault,
     onChange,
-    setSelectedValue,
+    keyWord,
+    setHeadValue,
   } = props;
-
   const itemHeight = 28; // 行高
   const visibleCount = useMemo(
     () => Math.ceil(visibleHeight / itemHeight) + 2,
     [visibleHeight],
   ); // 可视行数
   const [list, setList] = useState(dataSource.slice(0, visibleCount)); // 当前渲染列表数据
-  const [selectKeyValue, setSelectKeyValue] = useState<string[]>(selectValue); // 存储当前选中项的唯一标识值
+  const [selectKeyValue, setSelectKeyValue] = useState<string[]>(
+    selectDefault || [],
+  ); // 存储当前选中项的唯一标识值
   const [shadowItemKey, setShadowItemKey] = useState<string>(
-    selectValue[0] || list[0]?.key,
+    selectDefault?.[0] || list[0]?.key,
   ); // 记录当前阴影行
   const panelRef = useRef<any>();
   const listRef = useRef<any>();
-  const renderListRef = useRef<any>(dataSource.slice(0, 10));
+  const renderListRef = useRef<any>(dataSource.slice(0, visibleCount));
   const indexRef = useRef<number>(0);
   const inKeyBoard = useRef<boolean>(false);
 
@@ -95,8 +97,6 @@ const IndexPage: React.FC<{
     'ArrowDown',
     (e) => {
       if (panelRef.current.getBoundingClientRect().top === 0) return;
-      console.log('12345', indexRef.current, list);
-
       e.preventDefault();
       inKeyBoard.current = true;
       if (indexRef.current >= 9) {
@@ -135,10 +135,14 @@ const IndexPage: React.FC<{
     [list, selectKeyValue],
   );
   useEffect(() => {
-    setSelectedValue(selectKeyValue);
+    setSelectKeyValue(selectDefault || []);
+  }, [selectDefault]);
+
+  useEffect(() => {
+    setHeadValue?.(selectKeyValue);
   }, [selectKeyValue]);
   useEffect(() => {
-    onSelect(
+    onSelect?.(
       selectKeyValue,
       dataSource.filter((item: any) => selectKeyValue.includes(item.key)),
     );
@@ -153,7 +157,7 @@ const IndexPage: React.FC<{
     indexRef.current = index;
     // 单选模式下
     if (selectionType === 'radio') {
-      onChange(selected);
+      onChange?.(selected);
       if (selectKeyValue.includes(selected.key)) {
         setSelectKeyValue([]);
       } else {
@@ -162,7 +166,7 @@ const IndexPage: React.FC<{
     }
     // 多选模式下
     if (selectionType === 'checkbox') {
-      onChange(selected);
+      onChange?.(selected);
       if (selectKeyValue.includes(selected.key)) {
         setSelectKeyValue(selectKeyValue.filter((key) => key !== selected.key));
       } else {
@@ -186,6 +190,19 @@ const IndexPage: React.FC<{
     [dataSource],
   );
 
+  // const renderText = (title: string | React.ReactNode, columnWidth: number) => {
+  //   if (!keyWord) {
+  //     return <PanUIBoxEllipsis rendering={columnWidth} text={<span>{title}</span>} />;
+  //   }
+  //   let resultNodeText = String(title);
+  //   const searchValueArr = keyWord?.trim().split(' ').filter(Boolean).join('|');
+  //   let reg = new RegExp('(' + searchValueArr + ')', 'ig');
+  //   resultNodeText = resultNodeText.replace(reg, '<span style="color:var(--ant-primary-color)">$1</span>');
+  //   return (
+  //     <PanUIBoxEllipsis rendering={columnWidth} text={<span dangerouslySetInnerHTML={{ __html: resultNodeText }} />} />
+  //   );
+  // };
+
   return (
     <div
       style={{
@@ -193,15 +210,15 @@ const IndexPage: React.FC<{
         width: '100%',
         textAlign: 'center',
         overflow: 'auto',
-        position: 'absolute',
+        position: 'relative',
         overscrollBehavior: 'contain',
       }}
+      className="panui-virtual-table-body"
       onScroll={scrollEvent}
       ref={panelRef}
     >
-      <div style={{ height: dataSource.length * itemHeight + 'px' }}></div>
+      <div style={{ height: dataSource.length * itemHeight + 'px' }} />
       <div
-        className="list"
         style={{
           position: 'absolute',
           top: 0,
@@ -211,67 +228,88 @@ const IndexPage: React.FC<{
         }}
         ref={listRef}
       >
-        {list.map((item: any, index: number) => {
-          return (
-            <div
-              key={item.key}
-              className={`${styles.row} ${
-                selectKeyValue.includes(item.key) ? styles.selectRow : ''
-              } ${
-                shadowItemKey === item.key ? styles.shadowRow : styles.bgRow
-              } `}
-              style={{
-                height: itemHeight + 'px',
-              }}
-              onMouseEnter={(e) => {
-                if (!inKeyBoard.current) {
-                  e.stopPropagation();
-                  setShadowItemKey(item.key);
-                  indexRef.current = index;
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!inKeyBoard.current) {
-                  e.stopPropagation();
-                  setShadowItemKey(item.key);
-                  indexRef.current = index;
-                }
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                selectRow(item, index);
-              }}
-            >
-              <div className={styles.checkbox}>
-                {(() => {
-                  const CheckComponent = checkComponents['checkbox'];
-                  return (
-                    <CheckComponent
-                      key={item.key}
-                      checked={selectKeyValue.includes(item.key)}
-                      value={item}
-                    />
-                  );
-                })()}
-              </div>
-
-              {columns.map((col: any) => {
-                return (
-                  <div
-                    key={col.key}
-                    className={styles.colBox}
-                    style={{
-                      width: `${col.width}px`,
-                      paddingLeft: selectionType === 'radio' ? '0' : '10px',
-                    }}
-                  >
-                    {item[col.key]}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
+        <table style={{ width: '100%', tableLayout: 'fixed' }}>
+          <colgroup>
+            <col width="36px" />
+            {columns.map((col: any, index: number) => {
+              return (
+                <col
+                  key={col.key}
+                  {...(col.width
+                    ? {
+                        width:
+                          index === columns.length - 1
+                            ? `${col.width - 6}px`
+                            : `${col.width}px`,
+                      }
+                    : {})}
+                />
+              );
+            })}
+          </colgroup>
+          <tbody>
+            {list.map((item: any, index: number) => {
+              return (
+                <tr
+                  key={item.key}
+                  className={`${
+                    selectKeyValue.includes(item.key)
+                      ? 'panui-virtual-table-body-row-select'
+                      : ''
+                  } ${
+                    shadowItemKey === item.key
+                      ? 'panui-virtual-table-body-row-shadow'
+                      : 'panui-virtual-table-body-row-bg'
+                  } `}
+                  style={{
+                    height: itemHeight + 'px',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!inKeyBoard.current) {
+                      e.stopPropagation();
+                      setShadowItemKey(item.key);
+                      indexRef.current = index;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!inKeyBoard.current) {
+                      e.stopPropagation();
+                      setShadowItemKey(item.key);
+                      indexRef.current = index;
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectRow(item, index);
+                  }}
+                >
+                  <td className="panui-virtual-table-body-row-checkbox">
+                    {(() => {
+                      const CheckComponent = checkComponents[selectionType];
+                      return (
+                        <CheckComponent
+                          key={item.key}
+                          checked={selectKeyValue.includes(item.key)}
+                          value={item}
+                        />
+                      );
+                    })()}
+                  </td>
+                  {columns.map((col: any) => {
+                    return (
+                      <td
+                        key={col.key}
+                        className="panui-virtual-table-body-row-colBox "
+                      >
+                        {item[col.key]}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

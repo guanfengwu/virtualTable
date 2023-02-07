@@ -2,7 +2,7 @@
  * @Author: WGF
  * @Date: 2023-01-31 09:52:36
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-03 12:00:22
+ * @LastEditTime: 2023-02-07 11:09:19
  * @FilePath: \umi\src\components\SelectContain\index.tsx
  * @Description: 文件描述
  */
@@ -18,12 +18,14 @@ import React, {
 import { Select, Spin, Button } from 'antd';
 import type { SelectProps } from 'antd';
 import { debounce } from 'lodash-es';
-import styles from './index.less';
-import Nominate from '@/components/Nominate';
+import './index.less';
+import classnames from 'classnames';
+// import Nominate from '@/components/Nominate';
 export interface DebounceSelectProps<ValueType = any>
   extends Omit<SelectProps, 'options' | 'children' | 'onSelect'> {
   fetchOptions: (search: string) => Promise<ValueType[]>;
   searchPanel: ReactNode; // 搜索后展示面板
+  nominatePanel: ReactNode; // 历史及推荐面板
   setSourceData: Function; // 重置搜索后的面板数据
   selectionType: 'checkbox' | 'radio'; // 选择模式(单选或多选)
   onRef: any;
@@ -35,6 +37,7 @@ export interface DebounceSelectProps<ValueType = any>
 const IndexPage: React.FC<DebounceSelectProps> = (props) => {
   const {
     searchPanel,
+    nominatePanel,
     setSourceData,
     fetchOptions,
     selectionType,
@@ -47,13 +50,16 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
   const [searchValue, setSearchValue] = useState<string>(''); // 搜索的关键词(字符串格式)
   const [fetching, setFetching] = useState(false); // 当前是否为搜索状态
   const [open, setOpen] = useState(false); // 当前下拉菜单的状态
-  const fetchRef = useRef(0); //搜索防抖用的
+  const fetchRef = useRef(0); // 搜索防抖用的
   const selectRef = useRef<any>(); // 获取Select选择框
   const checkboxModeSelectData = useRef<any>([]); // 记录多选模式下选择的数据
   useImperativeHandle(onRef, () => {
     return {
       handleSelect,
       handleChange,
+      searchValue,
+      setData,
+      confirmOk,
     };
   });
   /**
@@ -89,6 +95,7 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
   const deWeight = (arr: any) => {
     let obj: any = {};
     return arr.reduce((item: any, next: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-constant-binary-expression
       obj[next.key] ? '' : (obj[next.key] = true && item.push(next));
       return item;
     }, []);
@@ -112,7 +119,7 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
     if (selectionType === 'radio') {
       setSelectValue(newValue);
       if (newValue !== selectValue) {
-        onSelect && onSelect(newValue, newValueItem);
+        onSelect?.(newValue, newValueItem);
         setOpen(false);
       }
     } else {
@@ -131,7 +138,7 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
       return;
     }
     const keys = checkboxModeSelectData.current.map((item: any) => item.key);
-    onSelect && onSelect(keys, checkboxModeSelectData.current);
+    onSelect?.(keys, checkboxModeSelectData.current);
     setSelectValue(keys);
     setOpen(false);
   };
@@ -140,14 +147,22 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
    */
   const renderSearchPanel: ReactNode = useMemo(() => {
     return (
-      <div className={styles.searchPanel}>
-        <div className={styles.header}>
+      <div className="panui-virtual-selector-searchPanel">
+        <div className="panui-virtual-selector-searchPanel-header">
           <div>全部</div>
-          <div>刷新</div>
+          <div
+            onClick={() => {
+              debounceFetcher(searchValue);
+            }}
+          >
+            刷新
+          </div>
         </div>
-        <div className={styles.content}>{searchPanel}</div>
+        <div className="panui-virtual-selector-searchPanel-content">
+          {searchPanel}
+        </div>
         {selectionType === 'checkbox' && (
-          <div className={styles.footer}>
+          <div className="panui-virtual-selector-searchPanel-footer">
             <Button type="primary" size="small" onClick={confirmOk}>
               确定
             </Button>
@@ -163,9 +178,9 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
    */
   const dropdownRender = (originNode: ReactNode) => {
     return (
-      <div className={styles.dropdownPanel}>
+      <div className="panui-virtual-selector-dropdownPanel">
         {searchValue === '' ? (
-          <Nominate />
+          nominatePanel
         ) : fetching ? (
           <Spin size="small" />
         ) : (
@@ -186,7 +201,7 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
         onChange: (newValue, newValueItems) => {
           setSelectValue(newValue);
           checkboxModeSelectData.current = newValueItems;
-          onSelect && onSelect(newValue, newValueItems);
+          onSelect?.(newValue, newValueItems);
         },
         maxTagCount: 'responsive',
       };
@@ -194,7 +209,6 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
       return {};
     }
   }, [selectionType]);
-
   return (
     <Select
       {...checkboxParam}
@@ -209,6 +223,7 @@ const IndexPage: React.FC<DebounceSelectProps> = (props) => {
       filterOption={false}
       onSearch={debounceFetcher}
       dropdownRender={dropdownRender}
+      popupClassName={classnames(['panui-virtual-selector-dropdown'])}
       options={(data || []).map((d) => ({
         key: d.key,
         value: d.key,

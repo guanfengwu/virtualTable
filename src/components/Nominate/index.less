@@ -1,4 +1,51 @@
-.wrapper {
-  width: 100%;
+.panui-virtual-history-nominate {
   height: 100%;
+  padding: 10px;
+  color: black;
+  box-sizing: border-box;
+}
+.panui-virtual-history {
+  height: 70px;
+  overflow: hidden;
+  .panui-virtual-h_content {
+    display: flex;
+    .panui-virtual-h_content-box {
+      width: fit-content;
+      margin-right: 10px;
+      border-radius: 15px;
+    }
+  }
+}
+
+.panui-virtual-nominate {
+  height: 150px;
+  .panui-virtual-n_content {
+    height: 120px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    .panui-virtual-n_content-box {
+      width: 100%;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.panui-virtual-history,
+.panui-virtual-nominate {
+  .panui-virtual-title {
+    margin-bottom: 10px;
+  }
+
+  .panui-virtual-h_content-box,
+  .panui-virtual-n_content-box {
+    background-color: rgba(227, 231, 237, 0.6);
+    padding: 5px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    cursor: pointer;
+  }
 }

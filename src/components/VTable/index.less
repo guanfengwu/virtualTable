@@ -1,0 +1,89 @@
+@row-height: 28px;
+@thead-color: #fafafa;
+.virtual-table {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+
+  .react-resizable-handle {
+    background-image: none !important;
+  }
+  .virtual-table-container {
+    overflow: hidden;
+    .virtual-table-header {
+      height: @row-height;
+      table {
+        border-collapse: collapse;
+        th:not(:last-child):not(.virtual-table-selection-column):after {
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          content: '';
+          width: 1.5px;
+          height: 1rem;
+          background-color: #f0f0f0;
+        }
+      }
+      .virtual-table-thead {
+        height: @row-height;
+        th {
+          background: @thead-color;
+        }
+      }
+    }
+    .virtual-table-body {
+      .virtual-table-row-selected {
+        background: rgba(24, 144, 255, 0.5) !important;
+      }
+      .virtual-table-row-hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+      .virtual-table-row:nth-child(2n) {
+        background: rgba(0, 0, 0, 0.02);
+      }
+      // 表格的滚动条样式
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        background-color: transparent;
+        -webkit-appearance: none;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #e3e7ed;
+        border-radius: 4px;
+      }
+      &::-webkit-scrollbar-thumb:vertical:hover {
+        cursor: pointer;
+      }
+
+      &::-webkit-scrollbar-track {
+        border-radius: 0;
+      }
+    }
+    .virtual-table-cell:not(.virtual-table-selection-column) {
+      box-sizing: border-box;
+      padding: 0 10px;
+      text-align: start;
+      color: rgba(0, 0, 0, 1);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .virtual-table-selection-column {
+      width: 36px;
+      padding-inline-end: 8px;
+      padding-inline-start: 8px;
+      text-align: center;
+      .virtual-table-selection {
+        position: relative;
+        display: inline-flex;
+        flex-direction: column;
+        .ant-radio-wrapper {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}

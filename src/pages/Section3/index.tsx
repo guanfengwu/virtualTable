@@ -2,7 +2,7 @@
  * @Author: WGF
  * @Date: 2023-02-06 15:37:43
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-06 20:44:49
+ * @LastEditTime: 2023-02-08 12:50:39
  * @FilePath: \umi\src\pages\Section3\index.tsx
  * @Description: 文件描述
  */
@@ -20,8 +20,8 @@ const IndexPage: React.FC<{}> = (props) => {
 
   const columns = [
     { title: '编号', dataIndex: 'code', key: 'code', width: 200 },
-    { title: '名称', dataIndex: 'name', key: 'name' },
-    { title: '其他', dataIndex: 'name', key: 'other' },
+    { title: '名称', dataIndex: 'name', key: 'name', width: 100 },
+    { title: '其他', dataIndex: 'name', key: 'other', width: 100 },
   ];
 
   const onSelected = (select: string[], selectItem: any[]) => {

@@ -17,26 +17,25 @@
   .panui-virtual-table-body-row-shadow {
     background-color: rgba(0, 0, 0, 0.1);
   }
-}
+  // 表格的滚动条样式
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background-color: transparent;
+    -webkit-appearance: none;
+  }
 
-// 表格的滚动条样式
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-  background-color: transparent;
-  -webkit-appearance: none;
-}
+  &::-webkit-scrollbar-thumb {
+    background: #e3e7ed;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:vertical:hover {
+    cursor: pointer;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: #e3e7ed;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:vertical:hover {
-  cursor: pointer;
-}
-
-::-webkit-scrollbar-track {
-  // box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  border-radius: 0;
-  // background: rgba(0, 0, 0, 0.1);
+  &::-webkit-scrollbar-track {
+    // box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 0;
+    // background: rgba(0, 0, 0, 0.1);
+  }
 }

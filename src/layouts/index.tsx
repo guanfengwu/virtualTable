@@ -2,7 +2,7 @@
  * @Author: WGF
  * @Date: 2023-01-18 11:08:39
  * @LastEditors: WGF
- * @LastEditTime: 2023-02-07 11:02:01
+ * @LastEditTime: 2023-02-08 17:35:54
  * @FilePath: \umi\src\layouts\index.tsx
  * @Description: 文件描述
  */
@@ -16,6 +16,8 @@ const menuData = [
   { route: 'section1', name: '原理' },
   { route: 'section3', name: '表格' },
   { route: 'section2', name: '搜索' },
+  { route: 'section4', name: '高级表格' },
+  { route: 'section5', name: '高级搜索' },
 ];
 
 function BasicLayout(props: { location: { pathname: any }; children: any }) {
